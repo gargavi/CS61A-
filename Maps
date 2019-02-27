@@ -1,0 +1,22 @@
+def find_predictor(user, restaurants, feature_fn):
+    xs = [feature_fn(r) for r in restaurants]
+    ys = [user_rating(user, restaurant_name(r)) for r in restaurants]
+
+    def summation(x, xs):
+        return x - sum(xs)/len(xs)
+
+    total_set = zip(xs, ys)
+
+    sum_of_x = sum([summation(x,xs)**2 for x in xs])
+    sum_of_y = sum([summation(y, ys)**2 for y in ys])
+    sum_of_x_and_y = sum([(summation(x[1], ys)*(summation(x[0], xs))) for x in total_set])
+
+    b = sum_of_x_and_y / sum_of_x
+    a = mean(ys) - b* mean(xs)
+    r_squared = sum_of_x_and_y**2 / (sum_of_x*sum_of_y)
+
+
+    def predictor(restaurant):
+        return b * feature_fn(restaurant) + a
+
+    return predictor, r_squared
